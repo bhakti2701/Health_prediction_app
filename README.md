@@ -1,4 +1,4 @@
-# MIRA – Health Prediction App (Custom ML Model)
+# MIRA – Health Prediction App 
 
 Streamlit web app for managing patient blood test records with a
 custom-trained ML model for health risk prediction.
