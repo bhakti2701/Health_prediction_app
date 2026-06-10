@@ -1,191 +1,151 @@
- # 🏥 MIRA – Health Prediction App
+# 🏥 MIRA – Health Prediction App
 
 ## Overview
 
 **MIRA** is a Machine Learning-powered health prediction web application built using **Streamlit**.
-The application analyzes patient blood test parameters and predicts health risk levels using a trained **Random Forest model**. It also allows full patient data management with an integrated database.
+It analyzes patient blood test parameters (Glucose, Haemoglobin, Cholesterol) and predicts health risk levels using a trained **Random Forest** model. It also provides full patient record management with an integrated SQLite database.
 
----
+
 
 ## Key Features
 
-* ML-based health risk prediction (Random Forest)
-* Input parameters:
-
-  * Glucose
-  * Haemoglobin
-  * Cholesterol
-* Displays:
-  * Risk level (High / Low)
-  * Confidence score
-  * Reason for prediction
-* Patient record management (CRUD operations)
-  * Add patient
-  * View records
-  * Update details
-  * Delete records
-* Search functionality for patient records
-* Input validation using Regex (email validation)
-* Dashboard metrics (high glucose, cholesterol, etc.)
-* Clean UI using Streamlit + custom CSS
+- ML-based health risk prediction (Random Forest)
+- Confidence score + reason for every prediction
+- Full CRUD — Add, View, Update, Delete patient records
+- Search patients by name or email
+- Dashboard metrics (high glucose, low haemoglobin, high cholesterol counts)
+- Input validation with Regex (email) and range checks
+- Clean UI with custom CSS styling
 
 ---
 
 ## Tech Stack
 
-### Frontend & Backend
-
-* Streamlit
-
-### Machine Learning
-
-* Random Forest Algorithm
-* Pandas
-* NumPy
-
-### Database
-
-* SQLite (`health.db`)
-
-### Other Libraries
-
-* Regex (`re`) for validation
-* Datetime
+| Layer | Technology |
+|---|---|
+| Frontend / Backend | Streamlit |
+| Machine Learning | scikit-learn (Random Forest) |
+| Data Processing | Pandas, NumPy |
+| Database | SQLite (`health.db`) |
+| Validation | Python `re` (Regex), `datetime` |
 
 ---
 
-## Machine Learning Model
+## ML Model Details
 
-* **Algorithm:** Random Forest
-* **Input Features:**
+- **Algorithm:** Random Forest Classifier
+- **Input Features:** Glucose (mg/dL), Haemoglobin (g/dL), Cholesterol (mg/dL)
+- **Output:** Risk label (High / Low), Confidence %, Reason
+- **Training Data:** ~1,400 synthetic samples based on published clinical reference ranges
+- **Evaluation:** 5-fold cross-validation + classification report on 20% test split
 
-  * Glucose
-  * Haemoglobin
-  * Cholesterol
-* **Output:**
+### Clinical Reference Ranges Used
 
-  * Risk Label (High / Low)
-  * Confidence Score (%)
-  * Explanation (Reason)
-* **Training Data:**
-
-  * ~1400 synthetic samples based on clinical ranges
+| Parameter | Normal | Borderline | High Risk |
+|---|---|---|---|
+| Glucose | 70–99 mg/dL | 100–125 mg/dL | ≥ 126 mg/dL |
+| Haemoglobin | 12.0–17.5 g/dL | — | < 12.0 g/dL |
+| Cholesterol | < 200 mg/dL | 200–239 mg/dL | ≥ 240 mg/dL |
 
 ---
 
 ## Project Structure
 
-```id="proj1"
+```
 Health_prediction_app/
 │
-├── app.py                # Main Streamlit application
-├── my_model.py           # ML model prediction logic
-├── health.db             # SQLite database
-├── requirements.txt      # Dependencies
+├── app.py                # Main Streamlit application (UI + CRUD + DB)
+├── my_model.py           # ML model loader and predict_health() function
+├── model_training.py     # Script to train and save model.pkl
+├── requirements.txt      # Python dependencies
+├── .gitignore            # Excludes db, pkl, pycache files
 └── README.md             # Project documentation
 ```
+
+> `health.db` and `model.pkl` are generated locally and excluded from version control via `.gitignore`.
 
 ---
 
 ## Installation & Setup
 
-### 1.Clone Repository
+### 1. Clone Repository
 
-```bash id="c1"
+```bash
 git clone https://github.com/bhakti2701/Health_prediction_app.git
 cd Health_prediction_app
 ```
 
-### 2.Create Virtual Environment
+### 2. Create Virtual Environment
 
-```bash id="c2"
+```bash
 python -m venv venv
+
+# Windows
 venv\Scripts\activate
+
+# Mac / Linux
+source venv/bin/activate
 ```
 
-### 3.Install Dependencies
+### 3. Install Dependencies
 
-```bash id="c3"
+```bash
 pip install -r requirements.txt
 ```
 
-### 4️.Run Application
+### 4. Train the ML Model
 
-```bash id="c4"
+Run this **once** before starting the app. It generates `model.pkl`.
+
+```bash
+python model_training.py
+```
+
+### 5. Run the Application
+
+```bash
 streamlit run app.py
 ```
+
+The app will open at `http://localhost:8501` in your browser.
 
 ---
 
 ## Application Modules
 
 ### ➤ Add Patient
-
-* Enter patient details
-* Input blood test values
-* Get ML prediction instantly
-* Save record to database
+- Enter name, date of birth, email, and blood test values
+- Get an instant ML prediction with confidence score and reason
+- Record is saved to the SQLite database
 
 ### ➤ View Patients
-
-* Display all patient records
-* Dashboard statistics
-* Search by name/email
+- See all patient records in a table
+- Dashboard cards: total patients, high glucose, high cholesterol, low haemoglobin
+- Search by name or email
 
 ### ➤ Update Patient
-
-* Modify patient details
-* Re-run ML prediction
+- Edit any patient's details and test values
+- ML prediction is re-run automatically on update
 
 ### ➤ Delete Patient
-
-* Remove patient records permanently
-
----
-
-## Validation
-
-* Email validation implemented using **Regular Expressions (Regex)**
-* Prevents duplicate entries using unique email constraint
+- Permanently remove a patient record with confirmation checkbox
 
 ---
 
-##  Insights Dashboard
+## Validation Rules
 
-* Total patients count
-* High glucose cases (>125 mg/dL)
-* High cholesterol cases (≥200 mg/dL)
-* Low haemoglobin cases (<12 g/dL)
-
+- Name must not be empty
+- Date of birth must be in the past
+- Email must match standard format (validated via Regex)
+- Glucose, Haemoglobin, Cholesterol must be positive numbers
+- Duplicate emails are rejected (unique constraint in DB)
 ---
 
-##  Future Enhancements
-
-* Deploy on cloud (Streamlit Cloud / AWS)
-* Add authentication system
-* Improve model with real-world datasets
-* Add more health parameters
-* Export reports (PDF/Excel)
-
----
-
-## Disclaimer
-
-This application is for **educational purposes only** and should not be used for medical diagnosis.
-
----
-
-## 👩‍💻 Author
+## Author
 
 **Bhakti Chaudhari**
-
-* Data Analyst | AI/ML Enthusiast
+Data Analyst | AI/ML Enthusiast
 
 ---
-**Conclusion**
 
-This project demonstrates a complete end-to-end data application with:
-CRUD operations
-Machine learning prediction
-AI integration
-Data validation and database management
+*This project demonstrates a complete end-to-end data application with CRUD operations, machine learning prediction, input validation, and database management.*
